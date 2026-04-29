@@ -1,5 +1,5 @@
-import * as State from './state.js';
-import { getMaterialCache } from './world.js';
+import { State, LEVEL_DATA } from './state.js';
+import { getMaterialCache, getBaseBox, getBaseCyl, getBaseSphere, addWall } from './world.js';
 import { playMonsterScreamSound } from './audio.js';
 
 function createMonster(type, pos) {
@@ -18,9 +18,9 @@ function spawnItems(locations, levelType) {
 }
 
 function createExitDoor(lastItemPos) {
-    const mat = new THREE.MeshPhongMaterial({ color: 0x880000, emissive: 0xff0000 }); exitDoor = new THREE.Mesh(getBaseBox(), mat); exitDoor.scale.set(10, 16, 2);
-    if(State.currentLevel === 0) { exitDoor.position.set(0, 8, 0); } else if (State.currentLevel === 1) { exitDoor.position.set(0, 8, -450); } else { exitDoor.position.set(lastItemPos.x, lastItemPos.y + 6, lastItemPos.z - 20); addWall(exitDoor.position.x, exitDoor.position.y-8, exitDoor.position.z, 20, 2, 20, State.sharedMats.neonOff); }
-    const light = new THREE.PointLight(0xff0000, 3, 50); light.position.z = 3; exitDoor.add(light); State.scene.add(exitDoor); exitDoor.updateMatrixWorld(true);
+    const mat = new THREE.MeshPhongMaterial({ color: 0x880000, emissive: 0xff0000 }); State.exitDoor = new THREE.Mesh(getBaseBox(), mat); State.exitDoor.scale.set(10, 16, 2);
+    if(State.currentLevel === 0) { State.exitDoor.position.set(0, 8, 0); } else if (State.currentLevel === 1) { State.exitDoor.position.set(0, 8, -450); } else { State.exitDoor.position.set(lastItemPos.x, lastItemPos.y + 6, lastItemPos.z - 20); addWall(State.exitDoor.position.x, State.exitDoor.position.y-8, State.exitDoor.position.z, 20, 2, 20, State.sharedMats.neonOff); }
+    const light = new THREE.PointLight(0xff0000, 3, 50); light.position.z = 3; State.exitDoor.add(light); State.scene.add(State.exitDoor); State.exitDoor.updateMatrixWorld(true);
     
     showMessage("All keys collected. Return to the starting point and enter the RED DOOR."); 
     State.monsters.forEach(m => m.speed *= 1.5); 
@@ -37,7 +37,7 @@ function placeMonsterFar(m) {
 function getCurrentRespawnTime() {
     if (State.gamePhase === 2) return 0.0;
     if (State.gamePhase === 1) return 7.0;
-    if (itemsCollected >= LEVEL_DATA[State.currentLevel].State.items) return 15.0;
+    if (State.itemsCollected >= LEVEL_DATA[State.currentLevel].items) return 15.0;
     return 25.0;
 }
 

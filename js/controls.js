@@ -1,4 +1,4 @@
-import * as State from './state.js';
+import { State } from './state.js';
 
 function setupControls() {
     const joyArea = document.getElementById('joystick-area'); const stick = document.getElementById('joystick-stick');
@@ -18,7 +18,7 @@ function setupControls() {
     });
 
     function lockPointer() {
-        if (State.gameActive && !window.isHoldingAlt && !isJumpscaring && !tutorialPause) {
+        if (State.gameActive && !window.isHoldingAlt && !State.isJumpscaring && !State.tutorialPause) {
             document.body.requestPointerLock().catch(()=>{});
         }
     }
@@ -27,12 +27,12 @@ function setupControls() {
     // --- UNIFIED INTERACTION HANDLERS ---
     window.handleSmartBtnStart = (e) => {
         if(e && e.cancelable) e.preventDefault(); 
-        if(!State.gameActive || isJumpscaring || tutorialPause || isIntroAnim) return;
+        if(!State.gameActive || State.isJumpscaring || State.tutorialPause || State.isIntroAnim) return;
         unlockAudio(); 
-        if (smartBtnState === 'DOOR') { window.advanceLevel(); } 
-        else if (smartBtnState === 'ITEM') { if(!isCameraLocked) { isHoldingInteract = true; interactProgress = 0; playUIClickSound(); } } 
+        if (State.smartBtnState === 'DOOR') { window.advanceLevel(); } 
+        else if (State.smartBtnState === 'ITEM') { if(!State.isCameraLocked) { State.isHoldingInteract = true; State.interactProgress = 0; playUIClickSound(); } } 
         else {
-            isBlinking = true; 
+            State.isBlinking = true; 
             document.getElementById('blink-overlay').style.opacity = 1; 
             
             let fatalSight = false; let caughtBy = null;
@@ -49,13 +49,13 @@ function setupControls() {
 
     window.handleSmartBtnEnd = (e) => {
         if(e && e.cancelable) e.preventDefault(); 
-        if (isBlinking) { 
-            isBlinking = false; 
-            if(!isBlackoutGlitch) document.getElementById('blink-overlay').style.opacity = 0; 
-            if(whisperGain) whisperGain.gain.value = 0; 
+        if (State.isBlinking) { 
+            State.isBlinking = false; 
+            if(!State.isBlackoutGlitch) document.getElementById('blink-overlay').style.opacity = 0; 
+            if(State.whisperGain) State.whisperGain.gain.value = 0; 
         } 
-        if (isHoldingInteract) { 
-            isHoldingInteract = false; interactProgress = 0; 
+        if (State.isHoldingInteract) { 
+            State.isHoldingInteract = false; State.interactProgress = 0; 
             document.getElementById('interact-bar-container').style.opacity = 0; 
             document.getElementById('interact-text').style.opacity = 0; 
             setTimeout(()=>{ 
@@ -67,41 +67,41 @@ function setupControls() {
 
     window.handleFlashlightStart = (e) => {
         if(e && e.cancelable) e.preventDefault(); 
-        if(!State.gameActive || isJumpscaring || tutorialPause || isIntroAnim) return; 
-        isHoldingFlashlightBtn = true;
+        if(!State.gameActive || State.isJumpscaring || State.tutorialPause || State.isIntroAnim) return; 
+        State.isHoldingFlashlightBtn = true;
         playUIClickSound(); 
         let flashBtnEl = document.getElementById('flashlight-btn');
         if (State.flashlightState === 'BROKEN') { 
-            State.flashlightState = 'REPAIRING'; repairTimer = 0; flashBtnEl.classList.add('active'); flashBtnEl.style.borderColor = "#ffdd44"; 
+            State.flashlightState = 'REPAIRING'; State.repairTimer = 0; flashBtnEl.classList.add('active'); flashBtnEl.style.borderColor = "#ffdd44"; 
         } else if (State.flashlightState === 'REPAIRING') { 
             // Do nothing
         } else if (State.flashlightState === 'ON') { 
             State.flashlightState = 'OFF'; 
         } else if (State.flashlightState === 'OFF') { 
             State.flashlightState = 'ON'; 
-            flashlightDurability = Math.min(State.gamePhase === 2 ? 8.0 : (State.gamePhase === 1 ? 4.0 : 2.0), flashlightDurability + 0.02); 
+            State.flashlightDurability = Math.min(State.gamePhase === 2 ? 8.0 : (State.gamePhase === 1 ? 4.0 : 2.0), State.flashlightDurability + 0.02); 
         } 
     };
 
     window.handleFlashlightEnd = (e) => {
         if(e && e.cancelable) e.preventDefault();
-        isHoldingFlashlightBtn = false;
+        State.isHoldingFlashlightBtn = false;
     };
 
     window.handleJump = (e) => { 
         if(e && e.cancelable) e.preventDefault(); 
-        if(!State.gameActive || isJumpscaring || tutorialPause || isIntroAnim) return; 
+        if(!State.gameActive || State.isJumpscaring || State.tutorialPause || State.isIntroAnim) return; 
         unlockAudio(); 
-        if (!isJumping) { velocityY = 15.0; isJumping = true; } 
+        if (!State.isJumping) { State.velocityY = 15.0; State.isJumping = true; } 
     };
 
 
     // --- PC EVENT LISTENERS ---
     document.addEventListener('mousemove', (e) => {
-        if (window.isPointerLocked && State.gameActive && !isCameraSnapping && !isJumpscaring && !isCameraLocked && !isIntroAnim) {
-            lookState.yaw -= e.movementX * 0.002;
-            lookState.pitch -= e.movementY * 0.002;
-            lookState.pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, lookState.pitch));
+        if (window.isPointerLocked && State.gameActive && !State.isCameraSnapping && !State.isJumpscaring && !State.isCameraLocked && !State.isIntroAnim) {
+            State.lookState.yaw -= e.movementX * 0.002;
+            State.lookState.pitch -= e.movementY * 0.002;
+            State.lookState.pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, State.lookState.pitch));
         }
     });
 
@@ -169,27 +169,27 @@ function setupControls() {
     });
 
     // --- MOBILE MOBILE EVENT LISTENERS ---
-    joyArea.addEventListener('touchstart', (e) => { e.preventDefault(); joyTouchId = e.changedTouches[0].identifier; updateJoystick(e.changedTouches[0]); }, {passive: false});
-    joyArea.addEventListener('touchmove', (e) => { e.preventDefault(); for(let i=0; i<e.touches.length; i++) if(e.touches[i].identifier === joyTouchId) updateJoystick(e.touches[i]); }, {passive: false});
-    const resetJoy = () => { joyTouchId = null; moveInput = {x: 0, y: 0}; stick.style.transform = `translate(-50%, -50%)`; isWalking = false; };
+    joyArea.addEventListener('touchstart', (e) => { e.preventDefault(); State.joyTouchId = e.changedTouches[0].identifier; updateJoystick(e.changedTouches[0]); }, {passive: false});
+    joyArea.addEventListener('touchmove', (e) => { e.preventDefault(); for(let i=0; i<e.touches.length; i++) if(e.touches[i].identifier === State.joyTouchId) updateJoystick(e.touches[i]); }, {passive: false});
+    const resetJoy = () => { State.joyTouchId = null; State.moveInput = {x: 0, y: 0}; stick.style.transform = `translate(-50%, -50%)`; State.isWalking = false; };
     joyArea.addEventListener('touchend', resetJoy); joyArea.addEventListener('touchcancel', resetJoy);
 
     function updateJoystick(touch) {
         const rect = joyArea.getBoundingClientRect(); const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
         let dx = touch.clientX - cx, dy = touch.clientY - cy; const maxD = 30; const dist = Math.sqrt(dx*dx + dy*dy);
         if (dist > maxD) { dx = (dx/dist)*maxD; dy = (dy/dist)*maxD; }
-        stick.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`; moveInput.x = dx/maxD; moveInput.y = dy/maxD; isWalking = (dist > 5);
+        stick.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`; State.moveInput.x = dx/maxD; State.moveInput.y = dy/maxD; State.isWalking = (dist > 5);
     }
 
-    rightZone.addEventListener('touchstart', (e) => { e.preventDefault(); if(rightTouchId===null) { rightTouchId = e.changedTouches[0].identifier; rightTouchStart = {x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY}; } }, {passive: false});
+    rightZone.addEventListener('touchstart', (e) => { e.preventDefault(); if(State.rightTouchId===null) { State.rightTouchId = e.changedTouches[0].identifier; State.rightTouchStart = {x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY}; } }, {passive: false});
     rightZone.addEventListener('touchmove', (e) => { 
-        e.preventDefault(); if (isCameraSnapping || isJumpscaring || isCameraLocked || isIntroAnim) return; 
-        for(let i=0; i<e.touches.length; i++) if(e.touches[i].identifier === rightTouchId) {
-            lookState.yaw -= (e.touches[i].clientX - rightTouchStart.x) * lookSpeed; lookState.pitch -= (e.touches[i].clientY - rightTouchStart.y) * lookSpeed;
-            lookState.pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, lookState.pitch)); rightTouchStart = {x: e.touches[i].clientX, y: e.touches[i].clientY};
+        e.preventDefault(); if (State.isCameraSnapping || State.isJumpscaring || State.isCameraLocked || State.isIntroAnim) return; 
+        for(let i=0; i<e.touches.length; i++) if(e.touches[i].identifier === State.rightTouchId) {
+            State.lookState.yaw -= (e.touches[i].clientX - State.rightTouchStart.x) * lookSpeed; State.lookState.pitch -= (e.touches[i].clientY - State.rightTouchStart.y) * lookSpeed;
+            State.lookState.pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, State.lookState.pitch)); State.rightTouchStart = {x: e.touches[i].clientX, y: e.touches[i].clientY};
         }
     }, {passive: false});
-    const resetLook = (e) => { for(let i=0; i<e.changedTouches.length; i++) if(e.changedTouches[i].identifier === rightTouchId) rightTouchId = null; };
+    const resetLook = (e) => { for(let i=0; i<e.changedTouches.length; i++) if(e.changedTouches[i].identifier === State.rightTouchId) State.rightTouchId = null; };
     rightZone.addEventListener('touchend', resetLook); rightZone.addEventListener('touchcancel', resetLook);
 
     smartBtn.addEventListener('touchstart', window.handleSmartBtnStart, {passive: false});

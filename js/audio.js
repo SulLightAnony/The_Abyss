@@ -1,4 +1,4 @@
-import * as State from './state.js';
+import { State, LEVEL_DATA, materialCache, loadingTips, lookSpeed, initDOMReferences } from './state.js';
 
 function unlockAudio() { if (!State.audioCtx) { try { State.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {} } if (State.audioCtx && State.audioCtx.state === 'suspended') State.audioCtx.resume(); }
         
