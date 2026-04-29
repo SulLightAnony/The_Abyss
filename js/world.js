@@ -1,5 +1,4 @@
 import { State, LEVEL_DATA, materialCache, loadingTips, lookSpeed, initDOMReferences } from './state.js';
-import { spawnItems, createMonster } from './entities.js';
 
 function initSharedMats() {
     if(!State.sharedMats) {
@@ -88,11 +87,11 @@ function buildLevel0() {
     }
     while(finalItemLocs.length < LEVEL_DATA[0].items && shuffledTiles.length > 0) { let [nx, nz] = shuffledTiles.pop().split(',').map(Number); finalItemLocs.push({x: nx, z: nz}); }
     
-    spawnItems(finalItemLocs, 0); 
+    window.spawnItems(finalItemLocs, 0); 
     
-    createMonster(0, {x: 100, y: 0, z: -100}); 
-    createMonster(3, {x: -100, y: 3, z: 100}); 
-    createMonster(4, {x: 150, y: 5, z: 150}); 
+    window.createMonster(0, {x: 100, y: 0, z: -100}); 
+    window.createMonster(3, {x: -100, y: 3, z: 100}); 
+    window.createMonster(4, {x: 150, y: 5, z: 150}); 
 }
 
 function buildLevel1() {
@@ -112,7 +111,7 @@ function buildLevel1() {
     addWall(0, -1, 0, 20, 2, 20, matTile); 
     let gridCells = []; for(let x=-360; x<=360; x+=80) { for(let z=-360; z<=360; z+=80) { if (Math.hypot(x, z) > 80) gridCells.push({x: x, z: z}); } }
     gridCells.sort(() => Math.random() - 0.5); let finalItemLocs = []; for(let i=0; i<LEVEL_DATA[1].items && i<gridCells.length; i++) { finalItemLocs.push(gridCells[i]); }
-    spawnItems(finalItemLocs, 1); createMonster(1, {x: 0, y: -5, z: -200}); State.monsters[0].active = true;
+    window.spawnItems(finalItemLocs, 1); window.createMonster(1, {x: 0, y: -5, z: -200}); State.monsters[0].active = true;
 }
 
 function buildLevel2() {
@@ -120,7 +119,7 @@ function buildLevel2() {
     State.validRooms = [];
     let curX = 0, curZ = -20; const itemLocs = [];
     for(let i=0; i<80; i++) { curZ -= (15 + Math.random()*20); curX += (Math.random()*60 - 30); let w = 15 + Math.random()*15; let d = 15 + Math.random()*15; let yOffset = (Math.random()*20 - 10); addWall(curX, yOffset, curZ, w, 2, d, matConcrete); if(Math.random()>0.7) addWall(curX, yOffset+20, curZ, 4, 40, 4, matConcrete); if(i===20 || i===50 || i===79) itemLocs.push({x: curX, y: yOffset+2, z: curZ}); }
-    spawnItems(itemLocs, 2); createMonster(2, {x: 0, y: 20, z: -50}); State.monsters[0].active = true;
+    window.spawnItems(itemLocs, 2); window.createMonster(2, {x: 0, y: 20, z: -50}); State.monsters[0].active = true;
 }
 
 function setupLighting() {

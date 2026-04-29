@@ -122,7 +122,7 @@ function animate() {
         State.slaughterSpeedMultiplier = Math.min(1.75, State.slaughterSpeedMultiplier + 0.02 * delta);
     }
 
-    let flashBtn = document.getElementById('State.flashlight-btn');
+    let flashBtn = document.getElementById('flashlight-btn');
     let repairContainer = document.getElementById('repair-bar-container'); let repairFill = document.getElementById('repair-bar-fill'); let repairText = document.getElementById('repair-text');
 
     if (State.flashlightState === 'REPAIRING') {
@@ -339,7 +339,7 @@ function animate() {
         if(m.visibleFrame && !State.isBlinking) { if(dist2D < minVisDist) { minVisDist = dist2D; closestVisibleMonster = m; } } else { if(dist2D < minUnseenDist) minUnseenDist = dist2D; }
     });
 
-    State.isCameraLocked = false; currentlySnapping = false; anyMonsterDespawningUI = false;
+    State.isCameraLocked = false; State.currentlySnapping = false; State.anyMonsterDespawningUI = false;
     if (State.lockedMonster) { if (!State.lockedMonster.active || !State.lockedMonster.visibleFrame) { State.lockedMonster = null; } }
     if (!State.lockedMonster && closestVisibleMonster && minVisDist < lockRadius) { State.lockedMonster = closestVisibleMonster; State.lockedMonster.isSnappingCam = true; }
 
@@ -360,12 +360,12 @@ function animate() {
             let targetYaw = Math.atan2(State.camera.position.x - State.lockedMonster.mesh.position.x, State.camera.position.z - State.lockedMonster.mesh.position.z);
             let diff = targetYaw - (State.lookState.yaw % (Math.PI * 2));
             while (diff > Math.PI) diff -= Math.PI * 2; while (diff < -Math.PI) diff += Math.PI * 2;
-            if (State.lockedMonster.isSnappingCam) { currentlySnapping = true; if (Math.abs(diff) > 0.05) { State.lookState.yaw += diff * (delta * 10.0); State.lookState.pitch += (0 - State.lookState.pitch) * (delta * 10.0); } else { State.lockedMonster.isSnappingCam = false; State.lockedMonster.hasSnappedEncounter = true; playUIClickSound(); } } 
+            if (State.lockedMonster.isSnappingCam) { State.currentlySnapping = true; if (Math.abs(diff) > 0.05) { State.lookState.yaw += diff * (delta * 10.0); State.lookState.pitch += (0 - State.lookState.pitch) * (delta * 10.0); } else { State.lockedMonster.isSnappingCam = false; State.lockedMonster.hasSnappedEncounter = true; playUIClickSound(); } } 
             else { State.lookState.yaw += diff * (delta * 5.0); State.lookState.pitch += (0 - State.lookState.pitch) * (delta * 5.0); }
             
             if (State.flashlightState === 'ON' && !State.isBlinking) { State.lockedMonster.despawnProgress += 33.33 * delta; } else { State.lockedMonster.despawnProgress = Math.max(0, State.lockedMonster.despawnProgress - 20.0 * delta); }
             if (State.lockedMonster.despawnProgress > 0) { 
-                anyMonsterDespawningUI = true; 
+                State.anyMonsterDespawningUI = true; 
                 let dBarCont = document.getElementById('despawn-bar-container'); let dText = document.getElementById('despawn-text');
                 dBarCont.style.display = 'block'; dText.style.display = 'block'; 
                 dBarCont.style.opacity = 1; dText.style.opacity = 1;
@@ -394,12 +394,12 @@ function animate() {
         if(dist2D < fatalD && m.active && !State.isBlinking) triggerJumpscareSequence("CORRUPTED");
     });
 
-    if (!anyMonsterDespawningUI) { 
+    if (!State.anyMonsterDespawningUI) { 
         let dBarCont = document.getElementById('despawn-bar-container'); let dText = document.getElementById('despawn-text');
         dBarCont.style.opacity = 0; dText.style.opacity = 0;
         setTimeout(()=>{ dBarCont.style.display = 'none'; dText.style.display = 'none'; }, 200);
     }
-    State.isCameraSnapping = currentlySnapping; 
+    State.isCameraSnapping = State.currentlySnapping; 
     
     State.normalTick += delta;
 
@@ -867,3 +867,7 @@ function triggerJumpscareSequence(msg) {
 }
 
 window.onload = checkSaveData();
+window.showMessage = showMessage;
+window.advanceLevel = advanceLevel;
+window.triggerJumpscareSequence = triggerJumpscareSequence;
+window.returnToMenu = returnToMenu;

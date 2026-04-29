@@ -1,4 +1,5 @@
 import { State } from './state.js';
+import { unlockAudio, playUIClickSound } from './audio.js';
 
 function setupControls() {
     const joyArea = document.getElementById('joystick-area'); const stick = document.getElementById('joystick-stick');

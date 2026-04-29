@@ -41,6 +41,9 @@ function getCurrentRespawnTime() {
     return 25.0;
 }
 
+window.createMonster = createMonster;
+window.spawnItems = spawnItems;
+
 export { 
     createMonster, 
     spawnItems, 
