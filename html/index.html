@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Abyss - v1.20.3 (PC Crossplay Update)</title>
+    
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+    <div id="landscape-warning">Please rotate your device to Landscape mode.</div>
+    
+    <div id="global-blackout"></div>
+
+    <div id="start-screen" class="screen-overlay">
+        <canvas id="menu-particles"></canvas>
+        <h1 class="pulse-element">THE ABYSS</h1>
+        <div class="credits-text" style="position: relative; z-index: 2;">Created by Almusayid | Coded by Gemini</div>
+        <div id="save-info" style="color: #88aa88; font-weight: bold; font-size: 13px; margin-bottom: 10px; position: relative; z-index: 2;"></div>
+        
+        <div class="instruction-box">
+            - Darkness slows your pace, but masks your presence.<br>
+            - Entities can hack light. Broken flashlights take time to repair. Hold the button to fix.<br>
+            - Hold light on them to fight back.<br>
+            - PC: WASD (Move), F (Flashlight), Left Click (Interact), Space (Jump).<br>
+            - PC: Esc to menu. Hold Alt to free mouse.
+        </div>
+
+        <div style="display: flex; gap: 20px; justify-content: center; position: relative; z-index: 2; margin-top: 5px;">
+            <button id="btn-continue" class="btn" style="display:none; color: #88aa88; border-color: #88aa88;">CONTINUE</button>
+            <button id="btn-new" class="btn pulse-element">ENTER</button>
+        </div>
+        <div class="version-text-bottom">v1.20.3 (PC Crossplay)</div>
+    </div>
+
+    <div id="loading-screen" class="screen-overlay">
+        <h1 style="color: #aa8888;">ENTERING SPACE...</h1>
+        <div id="load-task" style="font-weight: bold;">Connecting dimensions...</div>
+        <div id="load-bar-container"><div id="load-bar-fill"></div></div>
+        <div id="tip-container">Tip: The action button adapts based on your surroundings.</div>
+    </div>
+
+    <div id="tutorial-popup">
+        <p style="margin-bottom: 20px; font-size: 15px; line-height: 1.6; color: #ccc;">Close your eyes to focus your hearing and locate the Reality Keys.</p>
+        <button id="btn-tutorial-ok" class="btn pulse-element">UNDERSTOOD</button>
+    </div>
+
+    <div id="end-screen" class="screen-overlay" style="display:none;">
+        <h1 style="color: #88aa88; text-shadow: 0 0 10px #88aa88;">AWAKENED</h1>
+        <p>You have escaped the liminal layers.<br>Reality has returned.</p>
+        <button onclick="clearSaveAndRestart()" class="btn" style="color: #88aa88; border-color: #88aa88;">PLAY AGAIN</button>
+    </div>
+
+    <div id="game-over-screen" class="screen-overlay">
+        <h1 style="color: white; letter-spacing: 3px; font-size: 32px; text-shadow: none;">You are corrupted</h1>
+        <div style="margin-top: 40px; display: flex; gap: 20px;">
+            <button id="btn-menu-go" class="btn">MAIN</button>
+            <button id="btn-retry-go" class="btn">TRY AGAIN</button>
+        </div>
+    </div>
+
+    <div id="flash-overlay"></div>
+    <div id="jumpscare"><div id="jumpscare-text">FALLEN</div></div>
+    <div id="fade-transition"></div>
+
+    <div id="ui-layer">
+        <button id="btn-home-icon">⌂</button>
+        <button id="debug-skip-btn">SKIP</button>
+        <button id="debug-nightmare-btn">TEST NIGHTMARE</button>
+        
+        <div id="top-right-hud">
+            <div id="nightmare-hud">05:00</div>
+            <div id="durability-hud">💥 1.00%</div>
+        </div>
+
+        <div id="objective">Keys: <span id="item-count">0</span>/<span id="item-max">4</span></div>
+        <div id="level-indicator">LEVEL: RUSTED CORRIDOR</div>
+        <div id="message-box">...</div>
+        
+        <div id="interact-text" class="progress-label">RETRIEVING KEY...</div>
+        <div id="interact-bar-container" class="progress-container"><div id="interact-bar-fill" class="progress-fill"></div></div>
+
+        <div id="despawn-text" class="progress-label">BANISHING ENTITY...</div>
+        <div id="despawn-bar-container" class="progress-container"><div id="despawn-bar-fill" class="progress-fill"></div></div>
+
+        <div id="repair-text" class="progress-label">REPAIRING SYSTEM...</div>
+        <div id="repair-bar-container" class="progress-container"><div id="repair-bar-fill" class="progress-fill"></div></div>
+
+        <div id="crosshair"></div>
+        <div id="water-overlay"></div>
+        <div id="vignette-overlay"></div>
+        <div id="noise-overlay"></div>
+        <div id="blink-overlay"></div>
+        <div id="flashlight-btn" class="active">🔦</div>
+        <div id="smart-action-btn">CLOSE<br>EYES</div>
+        <div id="jump-btn">JUMP</div>
+        <div id="joystick-area"><div id="joystick-base"></div><div id="joystick-stick"></div></div>
+        <div id="right-zone"></div>
+    </div>
+
+    <script type="module" src="../js/main.js"></script>
+</body>
+</html>
