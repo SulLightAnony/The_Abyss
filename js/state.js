@@ -6,10 +6,10 @@ export let menuCanvas, mctx;
 export let particles = [];
 export let particleAnimId;
 
-// Tambahkan fungsi inisialisasi DOM di state.js    
+// Tambahkan fungsi inisialisasi DOM di js    
 export function initDOMReferences() {
-    export const menuCanvas = document.getElementById('menu-particles');
-    if (menuCanvas) export const mctx = menuCanvas.getContext('2d');
+    State.menuCanvas = document.getElementById('menu-particles');
+    if (State.menuCanvas) mctx = State.menuCanvas.getContext('2d');
 }
 
 // --- GAME STATE & GLOBAL VARS ---
@@ -89,7 +89,5 @@ let nightmareNoiseSrc = null, nightmareNoiseGain = null;
 let baseBoxGeo = null, baseCylGeo = null, baseSphereGeo = null; let sharedMats = null;
 
 // --- MENU PARTICLES ---
-const menuCanvas = document.getElementById('menu-particles');
-const mctx = menuCanvas.getContext('2d');
-let particles = [];
-let particleAnimId;
+menuCanvas = document.getElementById('menu-particles');
+mctx = menuCanvas.getContext('2d');

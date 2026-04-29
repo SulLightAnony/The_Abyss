@@ -18,7 +18,7 @@ function setupControls() {
     });
 
     function lockPointer() {
-        if (gameActive && !window.isHoldingAlt && !isJumpscaring && !tutorialPause) {
+        if (State.gameActive && !window.isHoldingAlt && !isJumpscaring && !tutorialPause) {
             document.body.requestPointerLock().catch(()=>{});
         }
     }
@@ -27,23 +27,23 @@ function setupControls() {
     // --- UNIFIED INTERACTION HANDLERS ---
     window.handleSmartBtnStart = (e) => {
         if(e && e.cancelable) e.preventDefault(); 
-        if(!gameActive || isJumpscaring || tutorialPause || isIntroAnim) return;
+        if(!State.gameActive || isJumpscaring || tutorialPause || isIntroAnim) return;
         unlockAudio(); 
-        if (smartBtnState === 'DOOR') { advanceLevel(); } 
+        if (smartBtnState === 'DOOR') { window.advanceLevel(); } 
         else if (smartBtnState === 'ITEM') { if(!isCameraLocked) { isHoldingInteract = true; interactProgress = 0; playUIClickSound(); } } 
         else {
             isBlinking = true; 
             document.getElementById('blink-overlay').style.opacity = 1; 
             
             let fatalSight = false; let caughtBy = null;
-            let fatalMultiplier = (flashlightState === 'ON') ? 1.0 : 0.7;
-            monsters.forEach(m => { 
-                let dX = m.mesh.position.x - camera.position.x; let dZ = m.mesh.position.z - camera.position.z; let dist2D = Math.sqrt(dX*dX + dZ*dZ); 
+            let fatalMultiplier = (State.flashlightState === 'ON') ? 1.0 : 0.7;
+            State.monsters.forEach(m => { 
+                let dX = m.mesh.position.x - State.camera.position.x; let dZ = m.mesh.position.z - State.camera.position.z; let dist2D = Math.sqrt(dX*dX + dZ*dZ); 
                 let fatalD = (m.type === 1 ? 15.0 : 6.0) * fatalMultiplier; 
-                if (gamePhase === 2) fatalD /= 2.0; 
+                if (State.gamePhase === 2) fatalD /= 2.0; 
                 if(m.active && m.visibleFrame && dist2D < fatalD) { fatalSight = true; caughtBy = m; } 
             });
-            if(fatalSight) triggerJumpscareSequence("CORRUPTED");
+            if(fatalSight) window.triggerJumpscareSequence("CORRUPTED");
         }
     };
 
@@ -67,19 +67,19 @@ function setupControls() {
 
     window.handleFlashlightStart = (e) => {
         if(e && e.cancelable) e.preventDefault(); 
-        if(!gameActive || isJumpscaring || tutorialPause || isIntroAnim) return; 
+        if(!State.gameActive || isJumpscaring || tutorialPause || isIntroAnim) return; 
         isHoldingFlashlightBtn = true;
         playUIClickSound(); 
         let flashBtnEl = document.getElementById('flashlight-btn');
-        if (flashlightState === 'BROKEN') { 
-            flashlightState = 'REPAIRING'; repairTimer = 0; flashBtnEl.classList.add('active'); flashBtnEl.style.borderColor = "#ffdd44"; 
-        } else if (flashlightState === 'REPAIRING') { 
+        if (State.flashlightState === 'BROKEN') { 
+            State.flashlightState = 'REPAIRING'; repairTimer = 0; flashBtnEl.classList.add('active'); flashBtnEl.style.borderColor = "#ffdd44"; 
+        } else if (State.flashlightState === 'REPAIRING') { 
             // Do nothing
-        } else if (flashlightState === 'ON') { 
-            flashlightState = 'OFF'; 
-        } else if (flashlightState === 'OFF') { 
-            flashlightState = 'ON'; 
-            flashlightDurability = Math.min(gamePhase === 2 ? 8.0 : (gamePhase === 1 ? 4.0 : 2.0), flashlightDurability + 0.02); 
+        } else if (State.flashlightState === 'ON') { 
+            State.flashlightState = 'OFF'; 
+        } else if (State.flashlightState === 'OFF') { 
+            State.flashlightState = 'ON'; 
+            flashlightDurability = Math.min(State.gamePhase === 2 ? 8.0 : (State.gamePhase === 1 ? 4.0 : 2.0), flashlightDurability + 0.02); 
         } 
     };
 
@@ -90,7 +90,7 @@ function setupControls() {
 
     window.handleJump = (e) => { 
         if(e && e.cancelable) e.preventDefault(); 
-        if(!gameActive || isJumpscaring || tutorialPause || isIntroAnim) return; 
+        if(!State.gameActive || isJumpscaring || tutorialPause || isIntroAnim) return; 
         unlockAudio(); 
         if (!isJumping) { velocityY = 15.0; isJumping = true; } 
     };
@@ -98,7 +98,7 @@ function setupControls() {
 
     // --- PC EVENT LISTENERS ---
     document.addEventListener('mousemove', (e) => {
-        if (window.isPointerLocked && gameActive && !isCameraSnapping && !isJumpscaring && !isCameraLocked && !isIntroAnim) {
+        if (window.isPointerLocked && State.gameActive && !isCameraSnapping && !isJumpscaring && !isCameraLocked && !isIntroAnim) {
             lookState.yaw -= e.movementX * 0.002;
             lookState.pitch -= e.movementY * 0.002;
             lookState.pitch = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, lookState.pitch));
@@ -106,19 +106,19 @@ function setupControls() {
     });
 
     document.addEventListener('mousedown', (e) => {
-        if (gameActive && e.button === 0 && window.isPointerLocked) {
+        if (State.gameActive && e.button === 0 && window.isPointerLocked) {
             window.handleSmartBtnStart(e);
         }
     });
 
     document.addEventListener('mouseup', (e) => {
-        if (gameActive && e.button === 0) {
+        if (State.gameActive && e.button === 0) {
             window.handleSmartBtnEnd(e);
         }
     });
 
     document.addEventListener('keydown', (e) => {
-        if (!gameActive) return;
+        if (!State.gameActive) return;
         const k = e.key.toLowerCase();
         if (k === 'w') window.pcKeys.w = true;
         if (k === 'a') window.pcKeys.a = true;
@@ -139,12 +139,12 @@ function setupControls() {
         }
         
         if (e.key === 'Escape') {
-            if (gameActive) returnToMenu();
+            if (State.gameActive) returnToMenu();
         }
     });
 
     document.addEventListener('keyup', (e) => {
-        if (!gameActive) return;
+        if (!State.gameActive) return;
         const k = e.key.toLowerCase();
         if (k === 'w') window.pcKeys.w = false;
         if (k === 'a') window.pcKeys.a = false;
@@ -163,7 +163,7 @@ function setupControls() {
     });
 
     document.body.addEventListener('click', (e) => {
-        if (gameActive && !window.isHoldingAlt && e.target.tagName !== 'BUTTON' && !e.target.closest('button')) {
+        if (State.gameActive && !window.isHoldingAlt && e.target.tagName !== 'BUTTON' && !e.target.closest('button')) {
             window.lockPointer();
         }
     });

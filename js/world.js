@@ -2,8 +2,8 @@ import * as State from './state.js';
 import { spawnItems, createMonster } from './entities.js';
 
 function initSharedMats() {
-    if(!sharedMats) {
-        sharedMats = {
+    if(!State.sharedMats) {
+        State.sharedMats = {
             table: new THREE.MeshPhongMaterial({color: 0x3d2314}), plant: new THREE.MeshPhongMaterial({color: 0x224422}),
             sofa: new THREE.MeshPhongMaterial({color: 0x5c2b29}), paint1: new THREE.MeshPhongMaterial({color: 0x331111}), paint2: new THREE.MeshPhongMaterial({color: 0x113333}),
             neon: new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0xffffee, emissiveIntensity: 1 }),
@@ -32,23 +32,23 @@ function getMaterialCache(type) {
 }
 
 function addWall(x, y, z, w, h, d, mat) {
-    const mesh = new THREE.Mesh(getBaseBox(), mat); mesh.scale.set(w, h, d); mesh.position.set(x, y, z); scene.add(mesh); mesh.updateMatrixWorld(true); const box = new THREE.Box3().setFromObject(mesh); colliders.push(box); wallMeshes.push(mesh); 
-    if (currentLevel === 0 && Math.random() > 0.6) { 
-        if (w >= 20 || d >= 20) { let pW = w > d ? 8 : 0.5; let pD = d > w ? 8 : 0.5; let pMat = Math.random() > 0.5 ? sharedMats.paint1 : sharedMats.paint2; let canvas = new THREE.Mesh(getBaseBox(), pMat); canvas.scale.set(pW, 4, pD); canvas.position.set(x, y, z); if (w > d) { canvas.position.z += (Math.random()>0.5 ? d/2 + 0.1 : -d/2 - 0.1); } else { canvas.position.x += (Math.random()>0.5 ? w/2 + 0.1 : -w/2 - 0.1); } scene.add(canvas); }
+    const mesh = new THREE.Mesh(getBaseBox(), mat); mesh.scale.set(w, h, d); mesh.position.set(x, y, z); State.scene.add(mesh); mesh.updateMatrixWorld(true); const box = new THREE.Box3().setFromObject(mesh); State.colliders.push(box); wallMeshes.push(mesh); 
+    if (State.currentLevel === 0 && Math.random() > 0.6) { 
+        if (w >= 20 || d >= 20) { let pW = w > d ? 8 : 0.5; let pD = d > w ? 8 : 0.5; let pMat = Math.random() > 0.5 ? State.sharedMats.paint1 : State.sharedMats.paint2; let canvas = new THREE.Mesh(getBaseBox(), pMat); canvas.scale.set(pW, 4, pD); canvas.position.set(x, y, z); if (w > d) { canvas.position.z += (Math.random()>0.5 ? d/2 + 0.1 : -d/2 - 0.1); } else { canvas.position.x += (Math.random()>0.5 ? w/2 + 0.1 : -w/2 - 0.1); } State.scene.add(canvas); }
     }
 }
 
-function buildCurrentLevel() { if (currentLevel === 0) buildLevel0(); else if (currentLevel === 1) buildLevel1(); else if (currentLevel === 2) buildLevel2(); }
+function buildCurrentLevel() { if (State.currentLevel === 0) buildLevel0(); else if (State.currentLevel === 1) buildLevel1(); else if (State.currentLevel === 2) buildLevel2(); }
 
 function buildLevel0() {
     const matFloor = getMaterialCache('carpet'); const matWall = getMaterialCache('wallpaper');
-    const floor = new THREE.Mesh(getBaseBox(), matFloor); floor.scale.set(800, 2, 800); floor.position.y = -1; scene.add(floor); floor.updateMatrixWorld(true); colliders.push(new THREE.Box3().setFromObject(floor)); wallMeshes.push(floor);
+    const floor = new THREE.Mesh(getBaseBox(), matFloor); floor.scale.set(800, 2, 800); floor.position.y = -1; State.scene.add(floor); floor.updateMatrixWorld(true); State.colliders.push(new THREE.Box3().setFromObject(floor)); wallMeshes.push(floor);
     
-    const matCeiling = getMaterialCache('ceiling'); const ceiling = new THREE.Mesh(getBaseBox(), matCeiling); ceiling.scale.set(800, 2, 800); ceiling.position.y = 21; scene.add(ceiling); ceiling.updateMatrixWorld(true); colliders.push(new THREE.Box3().setFromObject(ceiling)); wallMeshes.push(ceiling);
+    const matCeiling = getMaterialCache('ceiling'); const ceiling = new THREE.Mesh(getBaseBox(), matCeiling); ceiling.scale.set(800, 2, 800); ceiling.position.y = 21; State.scene.add(ceiling); ceiling.updateMatrixWorld(true); State.colliders.push(new THREE.Box3().setFromObject(ceiling)); wallMeshes.push(ceiling);
     
-    let mainDesk = new THREE.Mesh(getBaseBox(), sharedMats.table); mainDesk.scale.set(20, 5, 4); mainDesk.position.set(0, 2.5, -20); scene.add(mainDesk); mainDesk.updateMatrixWorld(true); colliders.push(new THREE.Box3().setFromObject(mainDesk));
-    let pillar1 = new THREE.Mesh(getBaseBox(), sharedMats.table); pillar1.scale.set(2, 20, 2); pillar1.position.set(-10, 10, -20); scene.add(pillar1);
-    let pillar2 = new THREE.Mesh(getBaseBox(), sharedMats.table); pillar2.scale.set(2, 20, 2); pillar2.position.set(10, 10, -20); scene.add(pillar2);
+    let mainDesk = new THREE.Mesh(getBaseBox(), State.sharedMats.table); mainDesk.scale.set(20, 5, 4); mainDesk.position.set(0, 2.5, -20); State.scene.add(mainDesk); mainDesk.updateMatrixWorld(true); State.colliders.push(new THREE.Box3().setFromObject(mainDesk));
+    let pillar1 = new THREE.Mesh(getBaseBox(), State.sharedMats.table); pillar1.scale.set(2, 20, 2); pillar1.position.set(-10, 10, -20); State.scene.add(pillar1);
+    let pillar2 = new THREE.Mesh(getBaseBox(), State.sharedMats.table); pillar2.scale.set(2, 20, 2); pillar2.position.set(10, 10, -20); State.scene.add(pillar2);
     
     let mapSet = new Set();
     for(let sx=-20; sx<=20; sx+=20) { for(let sz=-20; sz<=20; sz+=20) { mapSet.add(`${sx},${sz}`); } }
@@ -62,8 +62,8 @@ function buildLevel0() {
         let [tx, tz] = tile.split(',').map(Number);
         if(Math.random() > 0.75 && (tx!==0 || tz!==0)) { 
             let propType = Math.floor(Math.random() * 3); let propMesh;
-            if (propType === 0) { propMesh = new THREE.Mesh(getBaseBox(), sharedMats.table); propMesh.scale.set(8, 4, 5); } else if (propType === 1) { propMesh = new THREE.Mesh(getBaseCyl(), sharedMats.plant); propMesh.scale.set(2, 6, 2); } else { propMesh = new THREE.Mesh(getBaseBox(), sharedMats.sofa); propMesh.scale.set(10, 4, 4); }
-            propMesh.position.set(tx + (Math.random()-0.5)*5, 2, tz + (Math.random()-0.5)*5); scene.add(propMesh); propMesh.updateMatrixWorld(true); colliders.push(new THREE.Box3().setFromObject(propMesh)); 
+            if (propType === 0) { propMesh = new THREE.Mesh(getBaseBox(), State.sharedMats.table); propMesh.scale.set(8, 4, 5); } else if (propType === 1) { propMesh = new THREE.Mesh(getBaseCyl(), State.sharedMats.plant); propMesh.scale.set(2, 6, 2); } else { propMesh = new THREE.Mesh(getBaseBox(), State.sharedMats.sofa); propMesh.scale.set(10, 4, 4); }
+            propMesh.position.set(tx + (Math.random()-0.5)*5, 2, tz + (Math.random()-0.5)*5); State.scene.add(propMesh); propMesh.updateMatrixWorld(true); State.colliders.push(new THREE.Box3().setFromObject(propMesh)); 
         }
         const neighbors = [[tx+20,tz], [tx-20,tz], [tx,tz+20], [tx,tz-20]]; for(let [nx, nz] of neighbors) { if(!mapSet.has(`${nx},${nz}`)) { addWall(nx, 10, nz, 20, 20, 20, matWall); mapSet.add(`${nx},${nz}`); } }
     }
@@ -73,8 +73,8 @@ function buildLevel0() {
     let shuffledTiles = [...tiles].sort(() => Math.random() - 0.5);
     let targetDist = 150;
     
-    while(finalItemLocs.length < LEVEL_DATA[0].items && targetDist >= 0) {
-        for(let i=0; i<shuffledTiles.length && finalItemLocs.length < LEVEL_DATA[0].items; i++) {
+    while(finalItemLocs.length < LEVEL_DATA[0].State.items && targetDist >= 0) {
+        for(let i=0; i<shuffledTiles.length && finalItemLocs.length < LEVEL_DATA[0].State.items; i++) {
             let [nx, nz] = shuffledTiles[i].split(',').map(Number);
             if (Math.hypot(nx, nz) < 80) continue; 
             
@@ -86,7 +86,7 @@ function buildLevel0() {
         }
         targetDist -= 30; 
     }
-    while(finalItemLocs.length < LEVEL_DATA[0].items && shuffledTiles.length > 0) { let [nx, nz] = shuffledTiles.pop().split(',').map(Number); finalItemLocs.push({x: nx, z: nz}); }
+    while(finalItemLocs.length < LEVEL_DATA[0].State.items && shuffledTiles.length > 0) { let [nx, nz] = shuffledTiles.pop().split(',').map(Number); finalItemLocs.push({x: nx, z: nz}); }
     
     spawnItems(finalItemLocs, 0); 
     
@@ -96,8 +96,8 @@ function buildLevel0() {
 }
 
 function buildLevel1() {
-    const matTile = getMaterialCache('pool_tile'); const floor = new THREE.Mesh(getBaseBox(), matTile); floor.scale.set(1200, 2, 1200); floor.position.y = -11; scene.add(floor); floor.updateMatrixWorld(true); colliders.push(new THREE.Box3().setFromObject(floor)); wallMeshes.push(floor);
-    waterLevel = 0; const water = new THREE.Mesh(new THREE.PlaneGeometry(1200, 1200), new THREE.MeshPhongMaterial({ color: 0x00aaff, transparent: true, opacity: 0.6 })); water.rotation.x = -Math.PI / 2; water.position.y = waterLevel; scene.add(water);
+    const matTile = getMaterialCache('pool_tile'); const floor = new THREE.Mesh(getBaseBox(), matTile); floor.scale.set(1200, 2, 1200); floor.position.y = -11; State.scene.add(floor); floor.updateMatrixWorld(true); State.colliders.push(new THREE.Box3().setFromObject(floor)); wallMeshes.push(floor);
+    waterLevel = 0; const water = new THREE.Mesh(new THREE.PlaneGeometry(1200, 1200), new THREE.MeshPhongMaterial({ color: 0x00aaff, transparent: true, opacity: 0.6 })); water.rotation.x = -Math.PI / 2; water.position.y = waterLevel; State.scene.add(water);
     addWall(0, 10, -500, 1000, 40, 10, matTile); addWall(0, 10, 500, 1000, 40, 10, matTile); addWall(-500, 10, 0, 10, 40, 1000, matTile); addWall(500, 10, 0, 10, 40, 1000, matTile);
     
     window.validRooms = [];
@@ -111,8 +111,8 @@ function buildLevel1() {
     }
     addWall(0, -1, 0, 20, 2, 20, matTile); 
     let gridCells = []; for(let x=-360; x<=360; x+=80) { for(let z=-360; z<=360; z+=80) { if (Math.hypot(x, z) > 80) gridCells.push({x: x, z: z}); } }
-    gridCells.sort(() => Math.random() - 0.5); let finalItemLocs = []; for(let i=0; i<LEVEL_DATA[1].items && i<gridCells.length; i++) { finalItemLocs.push(gridCells[i]); }
-    spawnItems(finalItemLocs, 1); createMonster(1, {x: 0, y: -5, z: -200}); monsters[0].active = true;
+    gridCells.sort(() => Math.random() - 0.5); let finalItemLocs = []; for(let i=0; i<LEVEL_DATA[1].State.items && i<gridCells.length; i++) { finalItemLocs.push(gridCells[i]); }
+    spawnItems(finalItemLocs, 1); createMonster(1, {x: 0, y: -5, z: -200}); State.monsters[0].active = true;
 }
 
 function buildLevel2() {
@@ -120,16 +120,16 @@ function buildLevel2() {
     window.validRooms = [];
     let curX = 0, curZ = -20; const itemLocs = [];
     for(let i=0; i<80; i++) { curZ -= (15 + Math.random()*20); curX += (Math.random()*60 - 30); let w = 15 + Math.random()*15; let d = 15 + Math.random()*15; let yOffset = (Math.random()*20 - 10); addWall(curX, yOffset, curZ, w, 2, d, matConcrete); if(Math.random()>0.7) addWall(curX, yOffset+20, curZ, 4, 40, 4, matConcrete); if(i===20 || i===50 || i===79) itemLocs.push({x: curX, y: yOffset+2, z: curZ}); }
-    spawnItems(itemLocs, 2); createMonster(2, {x: 0, y: 20, z: -50}); monsters[0].active = true;
+    spawnItems(itemLocs, 2); createMonster(2, {x: 0, y: 20, z: -50}); State.monsters[0].active = true;
 }
 
 function setupLighting() {
-    ambientLight = new THREE.AmbientLight(0xffffff, currentLevel===2 ? 0.8 : 0.1); scene.add(ambientLight);
-    flashlight = new THREE.SpotLight(0xffffee, currentLevel===2? 0.5 : 2.5, 220, Math.PI / 4, 0.6, 1); flashlight.position.set(0, 0, 4); flashlight.target.position.set(0, 0, -10); camera.add(flashlight); camera.add(flashlight.target);
-    if(currentLevel < 2) {
-        for(let i=0; i<8; i++) { let l = new THREE.PointLight(0xffffff, 0, 150); scene.add(l); lightPool.push({ light: l, active: false, virtualIdx: -1, fadeOpacity: 0, keep: false, baseInt: 0, isFlicker: false, assignedMesh: null }); }
-        let idCount = 0; window.validRooms.forEach(pos => { if (Math.random() > 0.4) return; let isDeadAccessory = Math.random() > 0.3; let tubeMesh = new THREE.Mesh(getBaseBox(), sharedMats.neonOff); tubeMesh.scale.set(6, 0.4, 0.4); tubeMesh.position.set(pos.x + (Math.random()*10-5), pos.y, pos.z + (Math.random()*10-5)); scene.add(tubeMesh); if (!isDeadAccessory) { virtualLights.push({ id: idCount++, x: tubeMesh.position.x, y: tubeMesh.position.y, z: tubeMesh.position.z, baseInt: currentLevel===1 ? 0.8 : 0.5, isFlicker: Math.random() > 0.4, mesh: tubeMesh }); } });
-    } else { const dirLight = new THREE.DirectionalLight(0xffffff, 1); dirLight.position.set(50, 100, 50); scene.add(dirLight); }
+    ambientLight = new THREE.AmbientLight(0xffffff, State.currentLevel===2 ? 0.8 : 0.1); State.scene.add(ambientLight);
+    flashlight = new THREE.SpotLight(0xffffee, State.currentLevel===2? 0.5 : 2.5, 220, Math.PI / 4, 0.6, 1); flashlight.position.set(0, 0, 4); flashlight.target.position.set(0, 0, -10); State.camera.add(flashlight); State.camera.add(flashlight.target);
+    if(State.currentLevel < 2) {
+        for(let i=0; i<8; i++) { let l = new THREE.PointLight(0xffffff, 0, 150); State.scene.add(l); lightPool.push({ light: l, active: false, virtualIdx: -1, fadeOpacity: 0, keep: false, baseInt: 0, isFlicker: false, assignedMesh: null }); }
+        let idCount = 0; window.validRooms.forEach(pos => { if (Math.random() > 0.4) return; let isDeadAccessory = Math.random() > 0.3; let tubeMesh = new THREE.Mesh(getBaseBox(), State.sharedMats.neonOff); tubeMesh.scale.set(6, 0.4, 0.4); tubeMesh.position.set(pos.x + (Math.random()*10-5), pos.y, pos.z + (Math.random()*10-5)); State.scene.add(tubeMesh); if (!isDeadAccessory) { virtualLights.push({ id: idCount++, x: tubeMesh.position.x, y: tubeMesh.position.y, z: tubeMesh.position.z, baseInt: State.currentLevel===1 ? 0.8 : 0.5, isFlicker: Math.random() > 0.4, mesh: tubeMesh }); } });
+    } else { const dirLight = new THREE.DirectionalLight(0xffffff, 1); dirLight.position.set(50, 100, 50); State.scene.add(dirLight); }
 }
 
 function getBaseBox() { if(!baseBoxGeo) baseBoxGeo = new THREE.BoxGeometry(1, 1, 1); return baseBoxGeo; }
@@ -137,8 +137,8 @@ function getBaseCyl() { if(!baseCylGeo) baseCylGeo = new THREE.CylinderGeometry(
 function getBaseSphere() { if(!baseSphereGeo) baseSphereGeo = new THREE.SphereGeometry(1, 16, 16); return baseSphereGeo; }
 
 function clearScene() {
-    if(scene) { while(scene.children.length > 0){ scene.remove(scene.children[0]); } }
-    colliders = []; items = []; monsters = []; wallMeshes = []; virtualLights = []; lightPool = []; window.validRooms = []; itemsCollected = 0; exitDoor = null; 
+    if(State.scene) { while(State.scene.children.length > 0){ State.scene.remove(State.scene.children[0]); } }
+    State.colliders = []; State.items = []; State.monsters = []; wallMeshes = []; virtualLights = []; lightPool = []; window.validRooms = []; itemsCollected = 0; exitDoor = null; 
     document.getElementById('noise-overlay').style.opacity = 0; document.getElementById('vignette-overlay').style.opacity = 0;
     document.getElementById('blink-overlay').style.opacity = 0;
     
